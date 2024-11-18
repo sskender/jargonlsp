@@ -2,63 +2,89 @@ package protocol
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 )
 
-const (
-	METHOD_INITIALIZE_REQUEST = "initialize"
-)
-
-type RequestMessage struct {
-	JsonRPC string `json:"jsonrpc"`
-	Id      int    `json:"id"`
-	Method  string `json:"method"`
-	// TODO Params as string to parse later
-}
-
-func decodeRequestMessage(content []byte) (*RequestMessage, error) {
-	var requestMessage RequestMessage = RequestMessage{}
-
-	err := json.Unmarshal(content, &requestMessage)
+func EncodeResponseMessage(responseMessage any) ([]byte, error) {
+	content, err := json.Marshal(responseMessage)
 	if err != nil {
 		return nil, err
 	}
 
-	return &requestMessage, nil
+	result := fmt.Sprintf("Content-Length: %d\r\n\r\n%s", len(content), content)
+
+	log.Println("TOTAL BYTES TO WRITE CHECK:", len(content))
+
+	return []byte(result), nil
 }
 
-// TODO implement encode message
-
-func handleUnknownMethod(requestMessage *RequestMessage) {
-	log.Printf("unknown request method %s", requestMessage.Method)
+func DecodeRequestMessage(content []byte, requestMessage any) error {
+	return json.Unmarshal(content, requestMessage)
 }
 
-func handleInitializeRequestMethod(requestMessage *RequestMessage) {
-	log.Println("handling initizalie request")
-	log.Println(requestMessage)
+func GetRequestProcessor(method string) (func(any) (any, error), any, error) {
+	switch method {
+
+	case METHOD_INITIALIZE:
+		return InitializeRequestProcessor, &InitializeRequest{}, nil
+
+	case METHOD_INITIALIZED:
+		return InitializedNotificationProcessor, &RequestMessage{}, nil
+
+	default:
+		return nil, nil, fmt.Errorf("unknown request message method: '%s", method)
+
+	}
 }
 
-func HandleRequestMessage(content []byte) error {
-	requestMessage, err := decodeRequestMessage(content)
+func HandleRequestMessage(content []byte) ([]byte, error) {
+
+	requestMessage := RequestMessage{}
+	err := DecodeRequestMessage(content, &requestMessage)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	log.Println("THE PARSED MESSAGE:")
 	log.Println(requestMessage)
 	log.Println("END PARSED MESSAGE:")
 
-	// TODO where is the response handled - need to pass it to server so it can forward it
-
-	switch requestMessage.Method {
-
-	case METHOD_INITIALIZE_REQUEST:
-		handleInitializeRequestMethod(requestMessage)
-
-	default:
-		handleUnknownMethod(requestMessage)
-
+	fRequestProcessor, requestMessageType, err := GetRequestProcessor(requestMessage.Method)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	err = DecodeRequestMessage(content, requestMessageType)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println("AFTER DECODE")
+	log.Println(requestMessageType)
+
+	result, err := fRequestProcessor(requestMessageType)
+	if err != nil {
+		return nil, err
+	}
+
+	if result == nil {
+		return nil, nil
+	}
+
+	responseMessage := ResponseMessage{
+		JsonRPC: requestMessage.JsonRPC,
+		Id:      requestMessage.Id,
+		Result:  result,
+	}
+
+	log.Println("response")
+	log.Println(responseMessage)
+
+	response, err := EncodeResponseMessage(responseMessage)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, err
 }

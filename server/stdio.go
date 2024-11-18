@@ -11,8 +11,10 @@ import (
 	"strings"
 )
 
+// TODO maybe store documents, maybe not??
 type LanguageServer struct {
 	Reader *bufio.Reader // TODO maybe depends on tcp maybe not
+	Writer *bufio.Writer // TODO maybe depends on tcp maybe not
 }
 
 func New() *LanguageServer {
@@ -20,9 +22,11 @@ func New() *LanguageServer {
 
 	// TODO handle tcp input
 	reader := bufio.NewReader(os.Stdin)
+	writer := bufio.NewWriter(os.Stdout)
 
 	server := LanguageServer{
 		Reader: reader,
+		Writer: writer,
 	}
 
 	return &server
@@ -30,11 +34,13 @@ func New() *LanguageServer {
 
 func (s *LanguageServer) Run() {
 	for {
+		// TODO dont do anythign with writing responses here !!!
+		// TODO just log error if it happens, ignore and continue running
 		err := s.processRequest()
 		if err != nil {
 			if err == io.EOF {
 				log.Println("EOF reached")
-				// return // TODO never exit
+				return
 			} else {
 				log.Fatalf("ERROR: %v", err)
 			}
@@ -130,13 +136,36 @@ func (s *LanguageServer) processRequest() error {
 	//
 	// TODO pass everything to protocol handler - based on method
 
-	// TODO run go
-	err := protocol.HandleRequestMessage(content)
+	// TODO wrap entire run in  go
+
+	response, err := protocol.HandleRequestMessage(content)
 	if err != nil {
 		log.Println(err)
 	}
 
+	// TOOD write response
+	log.Println("RESPONSE")
+	log.Println(response)
+
+	if response == nil {
+		log.Println("empty response - nothing to write")
+		return nil
+	}
+
 	// TODO send back to server with some internal io component
+
+	wroteBytes, err := s.Writer.Write(response)
+	if err != nil {
+		return err
+	}
+
+	log.Println("WROTE:")
+	log.Println(wroteBytes)
+
+	err = s.Writer.Flush()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
