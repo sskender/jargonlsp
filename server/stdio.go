@@ -138,7 +138,7 @@ func (s *LanguageServer) processRequest() error {
 
 	// TODO wrap entire run in  go
 
-	response, err := protocol.HandleRequestMessage(content)
+	response, err := protocol.HandleClientRequest(content)
 	if err != nil {
 		log.Println(err)
 	}

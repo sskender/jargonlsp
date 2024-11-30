@@ -3,73 +3,65 @@ package protocol
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 )
 
-func EncodeResponseMessage(responseMessage any) ([]byte, error) {
-	content, err := json.Marshal(responseMessage)
+func encodeServerResponse(response any) ([]byte, error) {
+	content, err := json.Marshal(response)
 	if err != nil {
 		return nil, err
 	}
 
 	result := fmt.Sprintf("Content-Length: %d\r\n\r\n%s", len(content), content)
 
-	log.Println("TOTAL BYTES TO WRITE CHECK:", len(content))
-
 	return []byte(result), nil
 }
 
-func DecodeRequestMessage(content []byte, requestMessage any) error {
-	return json.Unmarshal(content, requestMessage)
+func decodeClientRequest(content []byte, request any) error {
+	return json.Unmarshal(content, request)
 }
 
-func GetRequestProcessor(method string) (func(any) (any, error), any, error) {
+func getRequestProcessor(method string) (func(any) (any, error), any, error) {
 	switch method {
 
 	case METHOD_INITIALIZE:
 		return InitializeRequestProcessor, &InitializeRequest{}, nil
 
 	case METHOD_INITIALIZED:
-		return InitializedNotificationProcessor, &RequestMessage{}, nil
+		return InitializedNotificationProcessor, &NotificationMessage{}, nil
+
+	case METHOD_SHUTDOWN:
+		return ShutdownRequestProcessor, &RequestMessage{}, nil
+
+	case METHOD_EXIT:
+		return ExitNotificationProcessor, &NotificationMessage{}, nil
 
 	default:
-		return nil, nil, fmt.Errorf("unknown request message method: '%s", method)
+		return nil, nil, fmt.Errorf("unknown request message method: '%s'", method)
 
 	}
 }
 
-func HandleRequestMessage(content []byte) ([]byte, error) {
-
+func HandleClientRequest(content []byte) ([]byte, error) {
 	requestMessage := RequestMessage{}
-	err := DecodeRequestMessage(content, &requestMessage)
+
+	err := decodeClientRequest(content, &requestMessage)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Println("THE PARSED MESSAGE:")
-	log.Println(requestMessage)
-	log.Println("END PARSED MESSAGE:")
-
-	fRequestProcessor, requestMessageType, err := GetRequestProcessor(requestMessage.Method)
+	fRequestProcessor, requestMessageType, err := getRequestProcessor(requestMessage.Method)
 	if err != nil {
 		return nil, err
 	}
 
-	err = DecodeRequestMessage(content, requestMessageType)
+	err = decodeClientRequest(content, requestMessageType)
 	if err != nil {
 		return nil, err
 	}
-
-	log.Println("AFTER DECODE")
-	log.Println(requestMessageType)
 
 	result, err := fRequestProcessor(requestMessageType)
 	if err != nil {
 		return nil, err
-	}
-
-	if result == nil {
-		return nil, nil
 	}
 
 	responseMessage := ResponseMessage{
@@ -78,10 +70,7 @@ func HandleRequestMessage(content []byte) ([]byte, error) {
 		Result:  result,
 	}
 
-	log.Println("response")
-	log.Println(responseMessage)
-
-	response, err := EncodeResponseMessage(responseMessage)
+	response, err := encodeServerResponse(responseMessage)
 	if err != nil {
 		return nil, err
 	}

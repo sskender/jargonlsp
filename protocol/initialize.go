@@ -20,6 +20,8 @@ type InitializeRequest struct {
 type ServerCapabilities struct {
 	PositionEncoding string `json:"positionEncoding"`
 	TextDocumentSync int    `json:"textDocumentSync"`
+	HoverProvider    bool   `json:"hoverProvider"`
+	// TODO idea: colors for known words?
 }
 
 type ServerInfo struct {
@@ -44,6 +46,7 @@ func InitializeRequestProcessor(requestMessage any) (any, error) {
 		ServerCapabilities: &ServerCapabilities{
 			PositionEncoding: "utf-16",
 			TextDocumentSync: 1,
+			HoverProvider:    true,
 		},
 		ServerInfo: &ServerInfo{
 			Name:    "JargonLSP", // TODO dont hardcode

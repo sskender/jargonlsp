@@ -26,5 +26,5 @@ func main() {
 	jargon := server.New()
 	jargon.Run()
 
-	log.Println("NEVER REACHED")
+	log.Fatalln("SHOULD NEVER REACH")
 }
