@@ -6,12 +6,15 @@ type RequestMessage struct {
 	Method  string `json:"method"`
 }
 
-type NotificationMessage RequestMessage
-
 type ResponseMessage struct {
 	JsonRPC string `json:"jsonrpc"`
 	Id      int    `json:"id"`
 	Result  any    `json:"result"`
+}
+
+type NotificationMessage struct {
+	JsonRPC string `json:"jsonrpc"`
+	Method  string `json:"method"`
 }
 
 // TODO implement Error
