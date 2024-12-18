@@ -3,6 +3,9 @@ package protocol
 import (
 	"encoding/json"
 	"fmt"
+	"jargonlsp/protocol/base"
+	"jargonlsp/protocol/processor"
+	"log"
 )
 
 func encodeServerResponse(response any) ([]byte, error) {
@@ -20,54 +23,66 @@ func decodeClientRequest(content []byte, request any) error {
 	return json.Unmarshal(content, request)
 }
 
-func getRequestProcessor(method string) (func(any) (any, error), any, error) {
+func getRequestProcessor(method string) (func(any) (any, error), any) {
 	switch method {
 
 	case METHOD_INITIALIZE:
-		return InitializeRequestProcessor, &InitializeRequest{}, nil
+		return processor.Initialize, &processor.InitializeRequest{}
 
 	case METHOD_INITIALIZED:
-		return InitializedNotificationProcessor, &NotificationMessage{}, nil
+		return processor.Initialized, &base.NotificationMessage{}
 
 	case METHOD_SHUTDOWN:
-		return ShutdownRequestProcessor, &RequestMessage{}, nil
+		return processor.Shutdown, &base.RequestMessage{}
 
 	case METHOD_EXIT:
-		return ExitNotificationProcessor, &NotificationMessage{}, nil
+		return processor.Exit, &base.NotificationMessage{}
+
+	case METHOD_TEXT_DOC_OPEN:
+		return processor.DocumentDidOpen, &processor.DidOpenTextDocumentNotification{}
+
+	case METHOD_TEXT_DOC_CHANGE:
+		return processor.DocumentDidChange, &processor.DidChangeTextDocumentNotification{}
 
 	default:
-		return nil, nil, fmt.Errorf("unknown request message method: '%s'", method)
+		return nil, nil
 
 	}
 }
 
 func HandleClientRequest(content []byte) ([]byte, error) {
-	requestMessage := RequestMessage{}
+	requestMessage := base.RequestMessage{}
 
 	err := decodeClientRequest(content, &requestMessage)
 	if err != nil {
 		return nil, err
 	}
 
-	fRequestProcessor, requestMessageType, err := getRequestProcessor(requestMessage.Method)
+	fRequestProcessor, tRequestMessage := getRequestProcessor(requestMessage.Method)
+
+	if fRequestProcessor == nil || tRequestMessage == nil {
+		log.Printf("unknown request message method: '%s'", requestMessage.Method)
+		return nil, nil
+	}
+
+	err = decodeClientRequest(content, tRequestMessage)
 	if err != nil {
 		return nil, err
 	}
 
-	err = decodeClientRequest(content, requestMessageType)
+	fResponse, err := fRequestProcessor(tRequestMessage)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := fRequestProcessor(requestMessageType)
-	if err != nil {
-		return nil, err
+	if fResponse == nil {
+		return nil, nil
 	}
 
-	responseMessage := ResponseMessage{
+	responseMessage := base.ResponseMessage{
 		JsonRPC: requestMessage.JsonRPC,
 		Id:      requestMessage.Id,
-		Result:  result,
+		Result:  fResponse,
 	}
 
 	response, err := encodeServerResponse(responseMessage)

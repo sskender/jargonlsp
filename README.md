@@ -1,3 +1,3 @@
-# Jargon LSP server
+# Jargon LSP Server
 
-Corporate jargon definitions inside text editor at your finger tips
+Any jargon definitions inside text editor at your finger tips

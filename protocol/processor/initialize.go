@@ -1,6 +1,9 @@
-package protocol
+package processor
 
-import "log"
+import (
+	"jargonlsp/protocol/base"
+	"log"
+)
 
 type ClientInfo struct {
 	Name    string `json:"name"`
@@ -13,7 +16,7 @@ type InitializeRequestParams struct {
 }
 
 type InitializeRequest struct {
-	RequestMessage
+	base.RequestMessage
 	Params *InitializeRequestParams `json:"params"`
 }
 
@@ -21,7 +24,6 @@ type ServerCapabilities struct {
 	PositionEncoding string `json:"positionEncoding"`
 	TextDocumentSync int    `json:"textDocumentSync"`
 	HoverProvider    bool   `json:"hoverProvider"`
-	// TODO idea: colors for known words?
 }
 
 type ServerInfo struct {
@@ -34,13 +36,17 @@ type InitializeResult struct {
 	ServerInfo         *ServerInfo         `json:"serverInfo"`
 }
 
-func InitializeRequestProcessor(requestMessage any) (any, error) {
+func Initialize(requestMessage any) (any, error) {
 	message := requestMessage.(*InitializeRequest)
 
-	log.Printf("new client initialize request with id %d and pid %d", message.Id, message.Params.ProcessId)
-	log.Printf("client is %s v%s", message.Params.ClientInfo.Name, message.Params.ClientInfo.Version)
+	mid := message.Id
+	pid := message.Params.ProcessId
 
-	// TODO implement logic to save client state
+	cname := message.Params.ClientInfo.Name
+	cversion := message.Params.ClientInfo.Version
+
+	log.Printf("new client initialize request with id %d and pid %d", mid, pid)
+	log.Printf("client is %s v%s", cname, cversion)
 
 	result := InitializeResult{
 		ServerCapabilities: &ServerCapabilities{
@@ -49,8 +55,8 @@ func InitializeRequestProcessor(requestMessage any) (any, error) {
 			HoverProvider:    true,
 		},
 		ServerInfo: &ServerInfo{
-			Name:    "JargonLSP", // TODO dont hardcode
-			Version: "0.1.0",     // TODO dont hardcode
+			Name:    base.LSP_SERVER_NAME,
+			Version: base.LSP_SERVER_VERSION,
 		},
 	}
 

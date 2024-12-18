@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"jargonlsp/server"
 	"log"
 	"os"
@@ -21,10 +23,16 @@ func main() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	log.SetOutput(logFile)
 
-	log.Println("JargonLSP main process started")
-
 	jargon := server.New()
-	jargon.Run()
 
-	log.Fatalln("SHOULD NEVER REACH")
+	showVersion := flag.Bool("version", false, "Show version")
+
+	flag.Parse()
+
+	if *showVersion {
+		fmt.Println(jargon.Version())
+		os.Exit(0)
+	}
+
+	jargon.Run()
 }
