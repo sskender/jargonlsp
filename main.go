@@ -35,4 +35,6 @@ func main() {
 	}
 
 	jargon.Run()
+
+	log.Println("exiting gracefully")
 }

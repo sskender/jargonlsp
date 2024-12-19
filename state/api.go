@@ -19,7 +19,7 @@ func GetState() *StateDB {
 		defer lock.Unlock()
 
 		if globalState == nil {
-			log.Println("initializing global state for the first time")
+			log.Println("initializing database for the first time")
 
 			globalState = &StateDB{
 				Documents: map[string]*DocumentItem{},
@@ -38,6 +38,14 @@ func (s *StateDB) IsEmpty() bool {
 	return s.Count() == 0
 }
 
+func (s *StateDB) Get(key string) (*DocumentItem, error) {
+	if s.Documents[key] == nil {
+		return nil, fmt.Errorf("get failed: invalid key %s", key)
+	}
+
+	return s.Documents[key], nil
+}
+
 func (s *StateDB) Save(key string, doc *DocumentItem) error {
 	if s.Documents[key] != nil {
 		return fmt.Errorf("save failed: already exists %s", key)
@@ -45,8 +53,23 @@ func (s *StateDB) Save(key string, doc *DocumentItem) error {
 
 	s.Documents[key] = doc
 
-	log.Println("saved content of document", key)
-	log.Printf("global state is now managing %d files", globalState.Count())
+	log.Printf("document saved %s", key)
+	log.Printf("database is managing %d files", s.Count())
+
+	return nil
+}
+
+func (s *StateDB) Delete(key string) error {
+	if s.Documents[key] == nil {
+		return fmt.Errorf("delete failed: invalid key %s", key)
+	}
+
+	log.Printf("database is managing %d files", s.Count())
+
+	delete(s.Documents, key)
+
+	log.Printf("document deleted %s", key)
+	log.Printf("database is managing %d files", s.Count())
 
 	return nil
 }
@@ -56,7 +79,7 @@ func (s *StateDB) Update(key string, content string, version int) error {
 		return fmt.Errorf("update failed: invalid key %s", key)
 	}
 
-	if s.Documents[key].Version >= version {
+	if version != -1 && s.Documents[key].Version >= version {
 		return fmt.Errorf("update failed: old version")
 	}
 

@@ -44,6 +44,12 @@ func getRequestProcessor(method string) (func(any) (any, error), any) {
 	case METHOD_TEXT_DOC_CHANGE:
 		return processor.DocumentDidChange, &processor.DidChangeTextDocumentNotification{}
 
+	case METHOD_TEXT_DOC_SAVE:
+		return processor.DocumentDidSave, &processor.DidSaveTextDocumentNotification{}
+
+	case METHOD_TEXT_DOC_CLOSE:
+		return processor.DocumentDidClose, &processor.DidCloseTextDocumentNotification{}
+
 	default:
 		return nil, nil
 
