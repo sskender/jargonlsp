@@ -50,6 +50,9 @@ func getRequestProcessor(method string) (func(any) (any, error), any) {
 	case METHOD_TEXT_DOC_CLOSE:
 		return processor.DocumentDidClose, &processor.DidCloseTextDocumentNotification{}
 
+	case METHOD_TEXT_DOC_HOVER:
+		return processor.DocumentHover, &processor.HoverRequest{}
+
 	default:
 		return nil, nil
 
