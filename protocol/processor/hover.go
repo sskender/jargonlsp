@@ -1,9 +1,12 @@
 package processor
 
 import (
+	"fmt"
 	"jargonlsp/protocol/base"
-	"log"
+	"jargonlsp/state"
 )
+
+const MARKUP_KIND = "markdown"
 
 type Position struct {
 	Line      uint `json:"line"`
@@ -29,14 +32,6 @@ type HoverRequest struct {
 	Params *HoverParams `json:"params"`
 }
 
-const MARKUP_KIND = "markdown"
-
-const MARKUP_VALUE = `
-# This is a title
-
-*This is just a longer paragraph that gives the definition for hovered text.*
-`
-
 type MarkupContent struct {
 	Kind  string `json:"kind"`
 	Value string `json:"value"`
@@ -50,19 +45,24 @@ type HoverResponse struct {
 func DocumentHover(requestMessage any) (any, error) {
 	message := requestMessage.(*HoverRequest)
 
-	// TODO implement
-
 	key := message.Params.TextDocument.Uri
-
-	log.Println(key)
 
 	line := message.Params.Position.Line
 	character := message.Params.Position.Character
 
+	gstate := state.GetState()
+
+	token, err := gstate.GetToken(key, line, character)
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO perform lookup and return definition
+
 	result := HoverResponse{
 		Contents: &MarkupContent{
 			Kind:  MARKUP_KIND,
-			Value: MARKUP_VALUE,
+			Value: formatMarkup(*token),
 		},
 		Range: &Range{
 			Start: &Position{
@@ -77,4 +77,12 @@ func DocumentHover(requestMessage any) (any, error) {
 	}
 
 	return result, nil
+}
+
+func formatMarkup(token string) string {
+	return fmt.Sprintf(`
+# Hello Hover
+
+*The selected token is '%s'.*
+`, token)
 }

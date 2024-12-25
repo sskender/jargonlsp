@@ -3,6 +3,7 @@ package state
 import (
 	"fmt"
 	"log"
+	"strings"
 	"sync"
 )
 
@@ -66,6 +67,8 @@ func (s *StateDB) Delete(key string) error {
 
 	log.Printf("database is managing %d files", s.Count())
 
+	// TODO does not delete just update version
+
 	delete(s.Documents, key)
 
 	log.Printf("document deleted %s", key)
@@ -74,21 +77,56 @@ func (s *StateDB) Delete(key string) error {
 	return nil
 }
 
-func (s *StateDB) Update(key string, content string, version int) error {
+func (s *StateDB) Update(key string, content string, version *uint) error {
 	if s.Documents[key] == nil {
 		return fmt.Errorf("update failed: invalid key %s", key)
 	}
 
-	if version != -1 && s.Documents[key].Version >= version {
+	if version != nil && s.Documents[key].Version >= *version {
 		return fmt.Errorf("update failed: old version")
 	}
 
 	log.Printf("updating content of document %s with version %d", key, s.Documents[key].Version)
 
-	s.Documents[key].Version = version
 	s.Documents[key].Text = content
+
+	if version == nil {
+		s.Documents[key].Version++
+	} else {
+		s.Documents[key].Version = *version
+	}
 
 	log.Printf("updated content of document %s to version %d", key, s.Documents[key].Version)
 
 	return nil
+}
+
+func (s *StateDB) GetToken(key string, line uint, column uint) (*string, error) {
+	document, err := s.Get(key)
+	if err != nil {
+		return nil, err
+	}
+
+	text := document.Text
+	lines := strings.Split(text, "\n")
+
+	// TODO something is buggy here
+
+	if len(lines) < int(line) {
+		return nil, fmt.Errorf("invalid line %d for key %s", line, key)
+	}
+
+	textLine := lines[line]
+
+	if len(textLine) < int(column) {
+		return nil, fmt.Errorf("invalid column %d for key %s", column, key)
+	}
+
+	// TODO get actual token instead of just character
+
+	tokenChar := string(textLine[column])
+
+	log.Printf("selected token char is '%s'", tokenChar)
+
+	return &tokenChar, nil
 }

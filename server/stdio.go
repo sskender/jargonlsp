@@ -50,6 +50,7 @@ func (s *LanguageServer) Run() {
 		err := s.processRequest()
 		if err != nil {
 			if err == io.EOF {
+				// TODO call exit command
 				return
 			}
 			log.Fatalf("ERROR: %v", err)

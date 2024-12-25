@@ -23,7 +23,7 @@ func DocumentDidSave(notificationMessage any) (any, error) {
 
 	gstate := state.GetState()
 
-	err := gstate.Update(key, content, -1)
+	err := gstate.Update(key, content, nil)
 	if err != nil {
 		return nil, err
 	}

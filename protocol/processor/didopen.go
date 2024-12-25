@@ -8,7 +8,7 @@ import (
 type TextDocumentItem struct {
 	Uri        string `json:"uri"`
 	LanguageId string `json:"languageId"`
-	Version    int    `json:"version"`
+	Version    uint   `json:"version"`
 	Text       string `json:"text"`
 }
 

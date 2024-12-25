@@ -58,8 +58,6 @@ func Initialize(requestMessage any) (any, error) {
 	log.Printf("new client initialize request with id %d and pid %d", mid, pid)
 	log.Printf("client is %s v%s", cname, cversion)
 
-	// TODO perform tests with changed settings
-
 	result := InitializeResult{
 		ServerCapabilities: &ServerCapabilities{
 			PositionEncoding: "utf-16",

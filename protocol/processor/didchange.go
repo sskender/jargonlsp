@@ -15,7 +15,7 @@ type TextDocumentIdentifier struct {
 
 type VersionedTextDocumentIdentifier struct {
 	TextDocumentIdentifier
-	Version int `json:"version"`
+	Version uint `json:"version"`
 }
 
 type DidChangeTextDocumentParams struct {
@@ -37,7 +37,7 @@ func DocumentDidChange(notificationMessage any) (any, error) {
 	gstate := state.GetState()
 
 	for _, item := range notification.Params.ContentChanges {
-		err := gstate.Update(key, item.Text, version)
+		err := gstate.Update(key, item.Text, &version)
 		if err != nil {
 			return nil, err
 		}
