@@ -3,7 +3,6 @@ package state
 import (
 	"fmt"
 	"log"
-	"strings"
 	"sync"
 )
 
@@ -99,34 +98,4 @@ func (s *StateDB) Update(key string, content string, version *uint) error {
 	log.Printf("updated content of document %s to version %d", key, s.Documents[key].Version)
 
 	return nil
-}
-
-func (s *StateDB) GetToken(key string, line uint, column uint) (*string, error) {
-	document, err := s.Get(key)
-	if err != nil {
-		return nil, err
-	}
-
-	text := document.Text
-	lines := strings.Split(text, "\n")
-
-	// TODO something is buggy here
-
-	if len(lines) < int(line) {
-		return nil, fmt.Errorf("invalid line %d for key %s", line, key)
-	}
-
-	textLine := lines[line]
-
-	if len(textLine) < int(column) {
-		return nil, fmt.Errorf("invalid column %d for key %s", column, key)
-	}
-
-	// TODO get actual token instead of just character
-
-	tokenChar := string(textLine[column])
-
-	log.Printf("selected token char is '%s'", tokenChar)
-
-	return &tokenChar, nil
 }

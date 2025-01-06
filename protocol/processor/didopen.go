@@ -24,13 +24,14 @@ type DidOpenTextDocumentNotification struct {
 func DocumentDidOpen(notificationMessage any) (any, error) {
 	notification := notificationMessage.(*DidOpenTextDocumentNotification)
 
+	key := notification.Params.TextDocument.Uri
+
 	doc := state.DocumentItem{
+		Key:        key,
 		LanguageId: notification.Params.TextDocument.LanguageId,
 		Text:       notification.Params.TextDocument.Text,
 		Version:    notification.Params.TextDocument.Version,
 	}
-
-	key := notification.Params.TextDocument.Uri
 
 	gstate := state.GetState()
 

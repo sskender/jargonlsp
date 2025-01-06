@@ -52,9 +52,18 @@ func DocumentHover(requestMessage any) (any, error) {
 
 	gstate := state.GetState()
 
-	token, err := gstate.GetToken(key, line, character)
+	document, err := gstate.Get(key)
 	if err != nil {
 		return nil, err
+	}
+
+	token, err := document.GetToken(line, character)
+	if err != nil {
+		return nil, err
+	}
+
+	if token == nil {
+		return nil, nil
 	}
 
 	// TODO perform lookup and return definition
