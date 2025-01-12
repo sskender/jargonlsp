@@ -30,7 +30,7 @@ func New() *LanguageServer {
 		Writer: writer,
 	}
 
-	log.Printf("%s v%s", server.Name(), server.Version())
+	log.Printf("Starting %s %s", server.Name(), server.Version())
 
 	return &server
 }
