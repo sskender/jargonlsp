@@ -1,8 +1,8 @@
 package processor
 
 import (
-	"jargonlsp/protocol/base"
-	"jargonlsp/state"
+	"github.com/sskender/jargonlsp/protocol/base"
+	"github.com/sskender/jargonlsp/state"
 )
 
 type TextDocumentItem struct {

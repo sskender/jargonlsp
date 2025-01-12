@@ -1,8 +1,10 @@
 package processor
 
 import (
-	"jargonlsp/protocol/base"
 	"log"
+
+	"github.com/sskender/jargonlsp/protocol/base"
+	"github.com/sskender/jargonlsp/version"
 )
 
 type ClientInfo struct {
@@ -71,8 +73,8 @@ func Initialize(requestMessage any) (any, error) {
 			HoverProvider: true,
 		},
 		ServerInfo: &ServerInfo{
-			Name:    base.LSP_SERVER_NAME,
-			Version: base.LSP_SERVER_VERSION,
+			Name:    version.Name,
+			Version: version.Version,
 		},
 	}
 

@@ -3,9 +3,10 @@ package protocol
 import (
 	"encoding/json"
 	"fmt"
-	"jargonlsp/protocol/base"
-	"jargonlsp/protocol/processor"
 	"log"
+
+	"github.com/sskender/jargonlsp/protocol/base"
+	"github.com/sskender/jargonlsp/protocol/processor"
 )
 
 func encodeServerResponse(response any) ([]byte, error) {

@@ -2,8 +2,9 @@ package processor
 
 import (
 	"fmt"
-	"jargonlsp/protocol/base"
-	"jargonlsp/state"
+
+	"github.com/sskender/jargonlsp/protocol/base"
+	"github.com/sskender/jargonlsp/state"
 )
 
 const MARKUP_KIND = "markdown"

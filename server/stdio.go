@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"errors"
 	"io"
-	"jargonlsp/protocol"
-	"jargonlsp/protocol/base"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/sskender/jargonlsp/protocol"
+	"github.com/sskender/jargonlsp/version"
 )
 
 type LanguageServer struct {
@@ -35,11 +36,11 @@ func New() *LanguageServer {
 }
 
 func (s *LanguageServer) Name() string {
-	return base.LSP_SERVER_NAME
+	return version.Name
 }
 
 func (s *LanguageServer) Version() string {
-	return base.LSP_SERVER_VERSION
+	return version.Version
 }
 
 func (s *LanguageServer) Run() {

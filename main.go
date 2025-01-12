@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"jargonlsp/server"
 	"log"
 	"os"
+
+	"github.com/sskender/jargonlsp/server"
 )
 
 const (

@@ -1,3 +1,3 @@
-module jargonlsp
+module github.com/sskender/jargonlsp
 
-go 1.22.5
+go 1.22.10
