@@ -15,8 +15,6 @@ type DocumentItem struct {
 
 func (d *DocumentItem) GetToken(line uint, column uint) (*string, error) {
 
-	// TODO improve logs
-
 	lines := strings.Split(d.Text, "\n")
 
 	if len(lines) < int(line) {
@@ -32,7 +30,7 @@ func (d *DocumentItem) GetToken(line uint, column uint) (*string, error) {
 	token := getTokenFromText(textLine, column)
 
 	if token == nil {
-		log.Println("no selected token")
+		log.Println("no token is selected")
 	} else {
 		log.Printf("selected token is '%s'", *token)
 	}
@@ -42,8 +40,6 @@ func (d *DocumentItem) GetToken(line uint, column uint) (*string, error) {
 
 func getTokenFromText(textLine string, cursor uint) *string {
 
-	// TODO improve logs
-
 	if !isPartOfToken(rune((textLine)[cursor])) {
 		return nil
 	}
@@ -51,26 +47,22 @@ func getTokenFromText(textLine string, cursor uint) *string {
 	colStart, colEnd := cursor, cursor
 
 	for colStart > 0 && isPartOfToken(rune((textLine)[colStart-1])) {
-		log.Println("start was at:", colStart)
 		colStart--
-		log.Println("start set at:", colStart)
 	}
 
 	for colEnd < uint(len(textLine)) && isPartOfToken(rune((textLine)[colEnd])) {
 		colEnd++
 	}
 
-	log.Printf("start: %d, stop: %d", colStart, colEnd)
-
 	if colStart == colEnd {
 		return nil
 	}
 
 	token := (textLine)[colStart:colEnd]
+
 	return &token
 }
 
 func isPartOfToken(c rune) bool {
-	log.Println("testing char", c)
-	return (c >= 97 && c <= 122) || (c >= 65 && c <= 90)
+	return (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c >= 48 && c <= 57) || c == 95
 }
