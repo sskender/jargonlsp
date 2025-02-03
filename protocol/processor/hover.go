@@ -51,9 +51,7 @@ func DocumentHover(requestMessage any) (any, error) {
 	line := message.Params.Position.Line
 	character := message.Params.Position.Character
 
-	gstate := state.GetState()
-
-	document, err := gstate.Get(key)
+	document, err := state.GetState().Get(key)
 	if err != nil {
 		return nil, err
 	}
@@ -63,16 +61,19 @@ func DocumentHover(requestMessage any) (any, error) {
 		return nil, err
 	}
 
-	if token == nil {
-		return nil, nil
+	definition, err := state.GetDictionary().GetDefinition(token)
+	if err != nil {
+		return nil, err
 	}
 
-	// TODO perform lookup and return definition
+	if token == nil || definition == nil {
+		return nil, nil
+	}
 
 	result := HoverResponse{
 		Contents: &MarkupContent{
 			Kind:  MARKUP_KIND,
-			Value: formatMarkup(*token),
+			Value: formatMarkupResponse(*token, *definition),
 		},
 		Range: &Range{
 			Start: &Position{
@@ -89,10 +90,12 @@ func DocumentHover(requestMessage any) (any, error) {
 	return result, nil
 }
 
-func formatMarkup(token string) string {
-	return fmt.Sprintf(`
-# Hello Hover
+// TODO markup looks buggy
 
-*The selected token is '%s'.*
-`, token)
+func formatMarkupResponse(token string, definition string) string {
+	return fmt.Sprintf(`
+# *%s*
+
+%s
+`, token, definition)
 }

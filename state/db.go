@@ -70,8 +70,6 @@ func (s *StateDB) Delete(key string) error {
 
 	log.Printf("database is managing %d files", s.Count())
 
-	// TODO does not delete just update version
-
 	delete(s.Documents, key)
 
 	log.Printf("document deleted %s", key)

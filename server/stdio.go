@@ -43,7 +43,7 @@ func (s *LanguageServer) Version() string {
 	return version.Version
 }
 
-func (s *LanguageServer) Run() {
+func (s *LanguageServer) RunLoop() {
 
 	// TODO run async
 
