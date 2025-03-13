@@ -34,10 +34,10 @@ func DocumentDidChange(notificationMessage any) (any, error) {
 	key := notification.Params.TextDocument.Uri
 	version := notification.Params.TextDocument.Version
 
-	gstate := state.GetState()
+	gdb := state.GetDatabase()
 
 	for _, item := range notification.Params.ContentChanges {
-		err := gstate.Update(key, item.Text, &version)
+		err := gdb.Documents.Update(key, item.Text, &version)
 		if err != nil {
 			return nil, err
 		}

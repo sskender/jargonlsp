@@ -51,7 +51,9 @@ func DocumentHover(requestMessage any) (any, error) {
 	line := message.Params.Position.Line
 	character := message.Params.Position.Character
 
-	document, err := state.GetState().Get(key)
+	gdb := state.GetDatabase()
+
+	document, err := gdb.Documents.Get(key)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +63,7 @@ func DocumentHover(requestMessage any) (any, error) {
 		return nil, err
 	}
 
-	definition, err := state.GetDictionary().GetDefinition(token)
+	definition, err := gdb.Dictionary.GetDefinition(token)
 	if err != nil {
 		return nil, err
 	}

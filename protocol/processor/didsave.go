@@ -21,9 +21,9 @@ func DocumentDidSave(notificationMessage any) (any, error) {
 	key := notification.Params.TextDocument.Uri
 	content := notification.Params.Text
 
-	gstate := state.GetState()
+	gdb := state.GetDatabase()
 
-	err := gstate.Update(key, content, nil)
+	err := gdb.Documents.Update(key, content, nil)
 	if err != nil {
 		return nil, err
 	}

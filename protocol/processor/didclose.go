@@ -19,9 +19,9 @@ func DocumentDidClose(notificationMessage any) (any, error) {
 
 	key := notification.Params.TextDocument.Uri
 
-	gstate := state.GetState()
+	gdb := state.GetDatabase()
 
-	err := gstate.Delete(key)
+	err := gdb.Documents.Delete(key)
 	if err != nil {
 		return nil, err
 	}

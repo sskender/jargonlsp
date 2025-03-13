@@ -33,9 +33,9 @@ func DocumentDidOpen(notificationMessage any) (any, error) {
 		Version:    notification.Params.TextDocument.Version,
 	}
 
-	gstate := state.GetState()
+	gdb := state.GetDatabase()
 
-	err := gstate.Save(key, &doc)
+	err := gdb.Documents.Save(key, &doc)
 	if err != nil {
 		return nil, err
 	}

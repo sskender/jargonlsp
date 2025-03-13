@@ -60,7 +60,7 @@ Create a JSON dictionary file structured like:
     "HODL": "HODL was initially a spelling error of ‘hold’ that became a term that was embraced as an inside joke by the early adopters of Bitcoin and Ethereum.",
     "Oracle": "A trusted feed of data, such as the current market prices of an asset or assets, that provides confidence to users that the data are timely, accurate, and untampered.",
     "ROI": "Return On Investment. The gains or losses on an investment.",
-    "TVL": "The Total Value Locked into a Smart Contract or set of Smart Contracts that may be deployed or stored at one or more exchanges or markets.",
+    "TVL": "The Total Value Locked into a Smart Contract or set of Smart Contracts that may be deployed or stored at one or more exchanges or markets."
 }
 ```
 
@@ -76,7 +76,7 @@ local configs = require("lspconfig.configs")
 
 configs.jargonlsp = {
     default_config = {
-        cmd = { "jargonlsp", "--dictionary=glossary.json" },
+        cmd = { "jargonlsp", "--dictionary=/path/to/glossary.json" },
         filetypes = { "json", "python" },
         root_dir = vim.fn.getcwd(),
         capabilities = lspconfig.util.default_config.capabilities,
