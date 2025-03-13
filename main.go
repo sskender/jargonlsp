@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/sskender/jargonlsp/server"
-	"github.com/sskender/jargonlsp/state"
 )
 
 const (
@@ -28,26 +27,30 @@ func main() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	log.SetOutput(logFile)
 
-	// TODO logging is bad to here
+	// parse flags
 
 	showVersion := flag.Bool("version", false, "Show version")
-	dictionaryPath := flag.String("dict", "", "Dictionary file to load")
-
-	// TODO support flag --stdio
+	dictionaryPath := flag.String("dictionary", "", "Dictionary file")
 
 	flag.Parse()
 
-	jargon := server.New()
+	// server settings
+
+	settings := server.ServerSettings{
+		DictionaryPath: dictionaryPath,
+		EnableTcp:      false,
+	}
+
+	// init server
+
+	jargon := server.New(settings)
 
 	if *showVersion {
 		fmt.Println(jargon.Version())
-		os.Exit(0)
+		return
 	}
 
-	err = state.GetDictionary().Load(dictionaryPath)
-	if err != nil {
-		panic(err)
-	}
+	// run main lopp
 
 	jargon.RunLoop()
 

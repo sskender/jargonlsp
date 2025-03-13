@@ -10,40 +10,54 @@ import (
 	"strings"
 
 	"github.com/sskender/jargonlsp/protocol"
+	"github.com/sskender/jargonlsp/state"
 	"github.com/sskender/jargonlsp/version"
 )
 
-type LanguageServer struct {
+type ServerSettings struct {
+	DictionaryPath *string
+	EnableTcp      bool
+}
+
+type Server struct {
 	Reader *bufio.Reader
 	Writer *bufio.Writer
 }
 
-func New() *LanguageServer {
+func New(settings ServerSettings) *Server {
 
-	// TODO handle tcp input
+	// TODO handle TCP instance
 
 	reader := bufio.NewReader(os.Stdin)
 	writer := bufio.NewWriter(os.Stdout)
 
-	server := LanguageServer{
+	server := Server{
 		Reader: reader,
 		Writer: writer,
 	}
 
 	log.Printf("Starting %s %s", server.Name(), server.Version())
 
+	gdb := state.GetDatabase()
+
+	err := gdb.Dictionary.Load(settings.DictionaryPath)
+	if err != nil {
+		// TODO handle this better
+		panic(err)
+	}
+
 	return &server
 }
 
-func (s *LanguageServer) Name() string {
+func (s *Server) Name() string {
 	return version.Name
 }
 
-func (s *LanguageServer) Version() string {
+func (s *Server) Version() string {
 	return version.Version
 }
 
-func (s *LanguageServer) RunLoop() {
+func (s *Server) RunLoop() {
 
 	// TODO run async
 
@@ -59,7 +73,7 @@ func (s *LanguageServer) RunLoop() {
 	}
 }
 
-func (s *LanguageServer) processRequest() error {
+func (s *Server) processRequest() error {
 	log.Println("waiting for a new request")
 
 	content, err := s.readRequest()
@@ -86,7 +100,7 @@ func (s *LanguageServer) processRequest() error {
 	return nil
 }
 
-func (s *LanguageServer) readRequest() ([]byte, error) {
+func (s *Server) readRequest() ([]byte, error) {
 
 	var contentLength int = 0
 
@@ -147,7 +161,7 @@ func (s *LanguageServer) readRequest() ([]byte, error) {
 	return content, nil
 }
 
-func (s *LanguageServer) writeResponse(response []byte) error {
+func (s *Server) writeResponse(response []byte) error {
 	if response == nil {
 		return nil
 	}

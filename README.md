@@ -76,7 +76,7 @@ local configs = require("lspconfig.configs")
 
 configs.jargonlsp = {
     default_config = {
-        cmd = { "jargonlsp", "--dictionary=glossary.json" },
+        cmd = { "jargonlsp", "--dictionary=/path/to/glossary.json" },
         filetypes = { "json", "python" },
         root_dir = vim.fn.getcwd(),
         capabilities = lspconfig.util.default_config.capabilities,

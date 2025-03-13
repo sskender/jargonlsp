@@ -9,13 +9,18 @@ import (
 
 type Dictionary map[string]string
 
-func (d *Dictionary) Size() int {
-	return len(*d)
+func (d Dictionary) Size() int {
+	if d == nil {
+		return 0
+	}
+
+	return len(d)
 }
 
-func (d *Dictionary) Load(filepath *string) error {
+func (d Dictionary) Load(filepath *string) error {
 
 	if filepath == nil || len(*filepath) == 0 {
+		// TODO return error or not ???
 		fmt.Println("warning: dictionary is not defined")
 		return nil
 	}
@@ -29,7 +34,7 @@ func (d *Dictionary) Load(filepath *string) error {
 
 	defer jsonFile.Close()
 
-	err = json.NewDecoder(jsonFile).Decode(d)
+	err = json.NewDecoder(jsonFile).Decode(&d)
 	if err != nil {
 		return err
 	}
@@ -39,33 +44,19 @@ func (d *Dictionary) Load(filepath *string) error {
 	return nil
 }
 
-func (d *Dictionary) GetDefinition(lexem *string) (*string, error) {
+func (d Dictionary) GetDefinition(lexem *string) (*string, error) {
+
+	if d == nil {
+		return nil, fmt.Errorf("get definition failed: dictionary is not initialized")
+	}
 
 	if lexem == nil {
 		return nil, nil
 	}
 
-	if definition, found := (*d)[*lexem]; found {
+	if definition, found := d[*lexem]; found {
 		return &definition, nil
 	}
 
 	return nil, nil
-}
-
-var globalDictionary *Dictionary
-
-func GetDictionary() *Dictionary {
-	if globalDictionary == nil {
-
-		lock.Lock()
-		defer lock.Unlock()
-
-		if globalDictionary == nil {
-			log.Println("initializing dictionary for the first time")
-
-			globalDictionary = &Dictionary{}
-		}
-	}
-
-	return globalDictionary
 }

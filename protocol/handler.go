@@ -21,6 +21,7 @@ func encodeServerResponse(response any) ([]byte, error) {
 }
 
 func decodeClientRequest(content []byte, request any) error {
+	// TODO split into two decodes
 	return json.Unmarshal(content, request)
 }
 
