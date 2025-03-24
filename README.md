@@ -24,13 +24,13 @@ You might wonder: why implement this as an LSP server instead of a native plugin
 
 ## Features
 
-- Customizable Dictionary: Load any JSON dictionary file with term-definition mappings.
+- **Customizable Dictionary**: Load any JSON dictionary file with term-definition mappings.
 
-- Hover Support: Get definitions by hovering over tokens.
+- **Hover Support**: Get definitions by hovering over tokens.
 
-- Multiple Dictionaries: Use per-project dictionaries by configuring dictionary paths.
+- **Multiple Dictionaries**: Use per-project dictionaries by configuring dictionary paths.
 
-- Minimal Dependencies: No overhead - runs anywhere Go runs.
+- **Minimal Dependencies**: No overhead - runs anywhere Go runs.
 
 ## Installation
 
@@ -95,9 +95,9 @@ If you are already using LSP hovers for other servers, you can bind this one to 
 
 ## Future Work
 
-- TCP Support: Current implementation uses standard input/output (stdio) communication. Future versions will add optional TCP-based communication to support more flexible setups like remote usage.
+- **TCP Support**: Current implementation uses standard input/output (stdio) communication. Future versions will add optional TCP-based communication to support more flexible setups like remote usage.
 
-- Advanced Matching: Token normalization, fuzzy matching, and support for multi-word phrases.
+- **Advanced Matching**: Token normalization, fuzzy matching, and support for multi-word phrases.
 
 ## Disclaimer & Considerations
 
