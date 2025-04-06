@@ -54,10 +54,11 @@ Create a JSON dictionary file structured like:
 ```json
 {
     "AMM": "A decentralized asset trading pool that enables market participants to buy or sell cryptocurrencies. Uniswap is the most well-known AMM.",
-    "APY": "Annual Percentage Yield, a time-based measurement of the Return On Investment (ROI) on an asset.",
+    "APR": "Annual percentage rate (APR) represents the yearly rate charged for borrowing money, represented as a percentage.",
+    "APY": "Annual percentage yield (APY) is similar to APR, but refers to money earned in a savings account or other investment, rather than the interest rate paid on a loan.",
     "dApp": "A decentralized Web3 software application that normally runs on a blockchain.",
     "DAO": "Distributed Autonomous Organization.",
-    "HODL": "HODL was initially a spelling error of ‘hold’ that became a term that was embraced as an inside joke by the early adopters of Bitcoin and Ethereum.",
+    "HODL": "HODL was initially a spelling error of 'hold' that became a term that was embraced as an inside joke by the early adopters of Bitcoin and Ethereum.",
     "Oracle": "A trusted feed of data, such as the current market prices of an asset or assets, that provides confidence to users that the data are timely, accurate, and untampered.",
     "ROI": "Return On Investment. The gains or losses on an investment.",
     "TVL": "The Total Value Locked into a Smart Contract or set of Smart Contracts that may be deployed or stored at one or more exchanges or markets."

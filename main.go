@@ -37,7 +37,7 @@ func main() {
 	// server
 
 	settings := server.ServerSettings{
-		DictionaryPath: dictionaryPath,
+		DictionaryPath: *dictionaryPath,
 		EnableTcp:      false,
 	}
 

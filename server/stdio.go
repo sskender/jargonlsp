@@ -15,7 +15,7 @@ import (
 )
 
 type ServerSettings struct {
-	DictionaryPath *string
+	DictionaryPath string
 	EnableTcp      bool
 }
 
@@ -42,8 +42,7 @@ func New(settings ServerSettings) *Server {
 
 	err := gdb.Dictionary.Load(settings.DictionaryPath)
 	if err != nil {
-		// TODO handle this better
-		panic(err)
+		log.Printf("warning: loading dictionary failed - dictionary is empty: %v", err)
 	}
 
 	return &server

@@ -63,12 +63,16 @@ func DocumentHover(requestMessage any) (any, error) {
 		return nil, err
 	}
 
-	definition, err := gdb.Dictionary.GetDefinition(token)
+	if token == nil {
+		return nil, nil
+	}
+
+	definition, err := gdb.Dictionary.GetDefinition(*token)
 	if err != nil {
 		return nil, err
 	}
 
-	if token == nil || definition == nil {
+	if definition == nil {
 		return nil, nil
 	}
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"strings"
 )
 
 type Dictionary map[string]string
@@ -17,44 +18,42 @@ func (d Dictionary) Size() int {
 	return len(d)
 }
 
-func (d Dictionary) Load(filepath *string) error {
+func (d Dictionary) Load(filepath string) error {
 
-	if filepath == nil || len(*filepath) == 0 {
-		// TODO return error or not ???
-		log.Println("warning: dictionary is not defined")
-		return nil
-	}
+	log.Printf("loading dictionary from '%s'", filepath)
 
-	log.Printf("loading dictionary from %s", *filepath)
-
-	jsonFile, err := os.Open(*filepath)
+	jsonFile, err := os.Open(filepath)
 	if err != nil {
 		return err
 	}
 
 	defer jsonFile.Close()
 
-	err = json.NewDecoder(jsonFile).Decode(&d)
+	tmpDict := Dictionary{}
+
+	err = json.NewDecoder(jsonFile).Decode(&tmpDict)
 	if err != nil {
 		return err
 	}
 
-	log.Printf("loaded %d words into dictionary from %s", d.Size(), *filepath)
+	for k, v := range tmpDict {
+		d[strings.ToLower(k)] = v
+	}
+
+	log.Printf("loaded %d words into dictionary from '%s'", d.Size(), filepath)
 
 	return nil
 }
 
-func (d Dictionary) GetDefinition(lexem *string) (*string, error) {
+func (d Dictionary) GetDefinition(lexem string) (*string, error) {
 
 	if d == nil {
 		return nil, errors.New("get definition failed: dictionary is not initialized")
 	}
 
-	if lexem == nil {
-		return nil, nil
-	}
+	lexem = strings.ToLower(lexem)
 
-	if definition, found := d[*lexem]; found {
+	if definition, found := d[lexem]; found {
 		return &definition, nil
 	}
 
