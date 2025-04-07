@@ -8,6 +8,8 @@ Working on a large codebase filled with company-specific terminology, acronyms, 
 
 **Jargon LSP Server** is a lightweight, Language Server Protocol ([LSP](https://en.wikipedia.org/wiki/Language_Server_Protocol)) server written in Go. It allows you to query definitions of unknown terms directly in your code editor, powered by a customizable dictionary file. The server is editor-agnostic and filetype-agnostic. It integrates seamlessly with any LSP-capable editor, such as Neovim, VSCode, Sublime, etc.
 
+![Demo](./docs/demo.gif)
+
 *Tested primarily with Neovim, but should work across different editors.*
 
 ## Why LSP?
